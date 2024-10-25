@@ -1,46 +1,48 @@
-package com.abc;
+package com.bank.Abc;
+
+import ch.qos.logback.core.net.SyslogOutputStream;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
+@Component
 public class Bank {
-    private List<Customer> customers;
+    private  List<Customer> customers;
 
-    public Bank() {
-        customers = new ArrayList<Customer>();
+    public Bank(){
+        this.customers = new ArrayList<>();
     }
 
-    public void addCustomer(Customer customer) {
+    // returning all list of customers
+    public List<Customer> getCustomers() {
+        return customers;
+    }
+
+    // returning first Customer value by checking null value as well
+    public Customer getFirstCustomer(){
+       if(!customers.isEmpty()){
+           return customers.get(0);
+       }
+       return null;
+    }
+     // adding customers in list
+    public void addCustomer(Customer customer){
+        System.out.println(customer.toString());
+
         customers.add(customer);
     }
 
-    public String customerSummary() {
-        String summary = "Customer Summary";
-        for (Customer c : customers)
-            summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
-        return summary;
+    public double getTotalInterestPaid(){
+        return customers.stream()
+                .mapToDouble(Customer :: calcTotalInterest)
+                .sum();
     }
 
-    //Make sure correct plural of word is created based on the number passed in:
-    //If number passed in is 1 just return the word otherwise add an 's' at the end
-    private String format(int number, String word) {
-        return number + " " + (number == 1 ? word : word + "s");
-    }
-
-    public double totalInterestPaid() {
-        double total = 0;
-        for(Customer c: customers)
-            total += c.totalInterestEarned();
-        return total;
-    }
-
-    public String getFirstCustomer() {
-        try {
-            customers = null;
-            return customers.get(0).getName();
-        } catch (Exception e){
-            e.printStackTrace();
-            return "Error";
-        }
+    @Override
+    public String toString() {
+        return "Bank{" +
+                "customers=" + customers +
+                '}';
     }
 }
